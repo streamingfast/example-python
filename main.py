@@ -3,16 +3,22 @@ import json
 import ssl
 import sys
 import grpc
+import os
 
-from dfuse.bstream.v1 import bstream_pb2_grpc
-from dfuse.bstream.v1.bstream_pb2 import BlocksRequestV2, STEP_IRREVERSIBLE, BLOCK_DETAILS_LIGHT
-from dfuse.ethereum.codec.v1 import codec_pb2
+from sf.firehose.v2 import firehose_pb2_grpc
+from sf.firehose.v2.firehose_pb2 import Request
+from sf.ethereum.type.v2 import type_pb2
 from google.protobuf.json_format import MessageToJson
 
+AUTH_ENDPOINT = os.getenv('AUTH_ENDPOINT') or 'auth.dfuse.io'
+STREAM_ENDPOINT = os.getenv('ENDPOINT') or 'mainnet.eth.streamingfast.io:443'
 
 def token_for_api_key(apiKey):
     # Needs to be cached since this API is rate limited, the returned token is valid for 24h
-    connection = http.client.HTTPSConnection("auth.dfuse.io")
+    #
+    # - Pinax uses https://auth.dfuse.io/v1/auth/issue
+    # - StreamingFast uses https://auth.pinax.network/v1/auth/issue
+    connection = http.client.HTTPSConnection(AUTH_ENDPOINT)
     connection.request(
         'POST',
         '/v1/auth/issue',
@@ -31,14 +37,14 @@ def token_for_api_key(apiKey):
     return token
 
 
-def blockstream_v2():
+def firehose_stream():
     credentials = grpc.access_token_call_credentials(
         token_for_api_key(sys.argv[1]))
     channel = grpc.secure_channel(
-        'bsc.streamingfast.io:443',
+        STREAM_ENDPOINT,
         credentials=grpc.composite_channel_credentials(grpc.ssl_channel_credentials(),
                                                        credentials))
-    return bstream_pb2_grpc.BlockStreamV2Stub(channel)
+    return firehose_pb2_grpc.StreamStub(channel)
 
 
 def block_stats(block):
@@ -60,24 +66,19 @@ def main():
         print("usage: python3 main.py <apiKey> --full")
         exit(1)
 
-    blockstream = blockstream_v2()
-    stream = blockstream.Blocks(BlocksRequestV2(
+    blockstream = firehose_stream()
+    stream = blockstream.Blocks(Request(
         start_block_num=5_975_000,
         stop_block_num=5_975_010,
 
-        # This could be used to filter the block so it contains only transactions you are intersted in
-        # See https://github.com/streamingfast/streamingfast-client#query-language for details
-        # include_filter_expr="to == '0x7a250d5630b4cf539739df2c5dacb4c659f2488d'"
-
-        # Shows only block that are deemed "irreversible" (200 confirmations hard-coded for now)
-        # To be live and deal with forks, use [STEP_NEW, STEP_UNDO]
-        fork_steps=[STEP_IRREVERSIBLE],
+        # Show all blocks, switch to True to only show final blocks
+        final_blocks_only=False,
     ))
 
     print_full = len(sys.argv) > 2 and sys.argv[2] == "--full"
 
     for response in stream:
-        block = codec_pb2.Block()
+        block = type_pb2.Block()
         succeed = response.block.Unpack(block)
         if succeed != True:
             raise Exception(

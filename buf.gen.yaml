@@ -1,0 +1,8 @@
+version: v1
+plugins:
+  - plugin: buf.build/grpc/python:v1.59.2
+    out: .
+
+  - plugin: buf.build/protocolbuffers/python
+    out: .
+

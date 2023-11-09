@@ -14,36 +14,38 @@
 # limitations under the License.
 
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PYTHON_BIN=${PYTHON_BIN:-python3}
 
-# Protobuf definitions (default location assume proto definitions are siblings of this project)
-PROTO=${1:-"$ROOT/../proto"}
-PROTO_ETHEREUM=${2:-"$ROOT/../proto-ethereum"}
+# Protobuf definitions
+PROTO=${1:-"$ROOT/proto"}
 
 function main() {
+  checks
+
   set -e
-  pushd "$ROOT" &> /dev/null
+  cd "$ROOT" &> /dev/null
 
-  generate "dfuse/bstream/v1/bstream.proto"
-  generate "dfuse/ethereum/codec/v1/codec.proto"
+  echo "Generating Protobuf bindings via 'buf'"
+  buf generate buf.build/streamingfast/firehose
+  buf generate buf.build/streamingfast/firehose-ethereum
 
-  echo "generate.sh - `date` - `whoami`" > $ROOT/last_generate_proto.txt
-  echo "dfuse-io/proto revision: `GIT_DIR=$PROTO/.git git rev-parse HEAD`" >> $ROOT/last_generate_proto.txt
-  echo "dfuse-io/proto-ethereum revision: `GIT_DIR=$PROTO_ETHEREUM/.git git rev-parse HEAD`" >> $ROOT/last_generate_proto.txt
+  echo "Done"
 }
 
-# usage:
-# - generate <protoPath>
-# - generate <protoBasePath/> [<file.proto> ...]
-function generate() {
-    base=""
-    if [[ "$#" -gt 1 ]]; then
-      base="$1"; shift
-    fi
-
-    for file in "$@"; do
-      $PYTHON_BIN -m grpc_tools.protoc -I$PROTO -I$PROTO_ETHEREUM --python_out=$ROOT --grpc_python_out=$ROOT $base$file
-    done
+function checks() {
+  result=`buf --version 2>&1 | grep -Eo 1\.[1-2][0-9\.]+`
+  if [[ "$result" == "" ]]; then
+    echo "Your version of 'buf' (at `which buf`) is not recent enough. To fix your problem, "
+    echo "update 'buf' CLI to latest version:"
+    echo ""
+    echo "  https://buf.build/docs/installation"
+    echo ""
+    echo "If everything is working as expected, the command:"
+    echo ""
+    echo "  buf --version"
+    echo ""
+    echo "Should print 'v1.18.0'"
+    exit 1
+  fi
 }
 
 main "$@"
