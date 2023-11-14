@@ -27,7 +27,7 @@ chains:
 
 #### Quickstart
 
-First of all, visit [https://streamingfast.io/](https://streamingfast.io/) to get
+First of all, visit [https://portal.streamingfast.io/](https://portal.streamingfast.io/) to get
 a free API key for your project.
 
 First, clone this repository to your work folder:
