@@ -17,12 +17,13 @@ You will need to have Python3 (>= 3.5+) as well as `virtualenv` and `pip`
 We use a virtual environment for this example, all dependencies are listed
 in the `requirements.txt` at the root of this project.
 
-#### Chain
+#### Chains
 
-This branch contains the necessary code to run Ethereum block from Firehose, check out other
-branches for other chain:
+This branch contains the necessary code for Ethereum Firehose block, check other branches for other
+chains:
 
-- [Antelope on branch `antelope`](https://github.com/streamingfast/example-python/tree/antelope) (e.g EOS, WAX, Telos, etc.)
+- [Ethereum on branch `master`](https://github.com/streamingfast/example-python/tree/master) (e.g Ethereum Mainnet, Polygon, BSC, etc.)
+- [Antelope on branch `antelope`](https://github.com/streamingfast/example-python/tree/antelope) (e.g WAX, EOS, Telos, etc.)
 
 #### Quickstart
 
