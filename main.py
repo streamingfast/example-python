@@ -7,7 +7,7 @@ import os
 
 from sf.firehose.v2 import firehose_pb2_grpc
 from sf.firehose.v2.firehose_pb2 import Request
-from antelope.type.v1 import type_pb2
+from sf.antelope.type.v1 import type_pb2
 from google.protobuf.json_format import MessageToJson
 
 AUTH_ENDPOINT = os.getenv('AUTH_ENDPOINT') or 'auth.pinax.network'

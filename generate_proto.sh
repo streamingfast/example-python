@@ -26,7 +26,7 @@ function main() {
 
   echo "Generating Protobuf bindings via 'buf'"
   buf generate buf.build/streamingfast/firehose
-  buf generate buf.build/zzptichka/antelope
+  buf generate buf.build/pinax/firehose-antelope
 
   echo "Done"
 }

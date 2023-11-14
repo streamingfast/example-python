@@ -35,7 +35,13 @@ Setup the virtual environment and pull all dependencies:
 ./install_deps.sh
 ```
 
-Once your environment is setup properly, simply run the `main.py` script:
+Once your environment is setup properly, set up your environment:
+
+```bash
+source env/bin/activate
+```
+
+Simply run the `main.py` script:
 
 ```bash
 python3 main.py YOUR_API_KEY_HERE
