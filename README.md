@@ -5,7 +5,7 @@ API:
 
 * Request a token from our authentication API
 * Creates a gRPC connection with credentials
-* Instantiates a BlockStream client
+* Instantiates a Firehose client
 * Start a stream of blocks
 * Prints the blocks received
 
@@ -16,6 +16,14 @@ You will need to have Python3 (>= 3.5+) as well as `virtualenv` and `pip`
 
 We use a virtual environment for this example, all dependencies are listed
 in the `requirements.txt` at the root of this project.
+
+#### Chain
+
+This branch contains the necessary code for Antelope Firehose block, check out other
+branches for other chain:
+
+- [Ethereum on branch `master`](https://github.com/streamingfast/example-python/tree/master) (e.g Ethereum Mainnet, Polygon, BSC, etc.)
+- [Antelope on branch `master`](https://github.com/streamingfast/example-python/tree/antelope) (e.g WAX, EOS, Telos, etc.)
 
 #### Quickstart
 
@@ -35,13 +43,13 @@ Setup the virtual environment and pull all dependencies:
 ./install_deps.sh
 ```
 
-Once your environment is setup properly, set up your environment:
+Once your environment is setup properly, you need to activate it for your current shell:
 
 ```bash
 source env/bin/activate
 ```
 
-Simply run the `main.py` script:
+Then simply run the `main.py` script:
 
 ```bash
 python3 main.py YOUR_API_KEY_HERE
@@ -54,24 +62,12 @@ print the full block in JSON:
 python3 main.py YOUR_API_KEY_HERE --full
 ```
 
-**Note** The default Protobuf to JSON will prints the various `bytes` type using `base64` encoding, this is unfortunate as it makes reading it in the JSON harder. If you find a quick option to print it as hexadecimal, open a PR we will be happy to merge it in.
-
-Further details about StreamingFast capabilities can be found on our Golang client at https://github.com/streamingfast/streamingfast-client#query-language.
+> [!NOTE]
+> The default Protobuf to JSON will prints the various `bytes` type using `base64` encoding, this is unfortunate as it makes reading it in the JSON harder. If you find a quick option to print it as hexadecimal, open a PR we will be happy to merge it in.
 
 ##### Protobuf
 
-The protocol buffers are already generated, the `generate_proto.sh` is able to regenerate them if needed, it showcases also the command the can be used to generate them back.
-
-The script expects by default that the proto definitions are sibling of this project, looking like:
-
-```
-projects
-├── example-python
-├── proto
-└── proto-ethereum
-```
-
-To re-generate, simply do:
+The protocol buffers are already generated, the `generate_proto.sh` is able to regenerate them if needed, it showcases also the command the can be used to generate them back. We use `buf` and some published Firehose chain's specific Protobuf definitions. To re-generate, simply do:
 
 ```bash
 ./generate_proto.sh
